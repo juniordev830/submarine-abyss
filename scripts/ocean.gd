@@ -120,7 +120,8 @@ func _process(delta: float) -> void:
 		get_tree().reload_current_scene()
 		return
 	if not finished:
-		oxygen = Rules.consume_oxygen(oxygen, delta)
+		var drain_rate: float = Rules.oxygen_rate_at_depth(submarine.global_position.y)
+		oxygen = Rules.consume_oxygen(oxygen, delta, drain_rate)
 		for gem in collectibles:
 			gem.rotate_y(delta)
 			if Rules.can_collect(submarine.global_position.distance_to(gem.global_position)):
@@ -145,4 +146,7 @@ func _process(delta: float) -> void:
 func _refresh_hud() -> void:
 	if not is_instance_valid(hud):
 		return
-	hud.text = "SUBMARINE ABYSS  •  EXPEDICAO 01\nPEROLAS: %d / 5      OXIGENIO: %d%%\nWASD: navegar   A/D: girar   Q/E: subir/descer   R: reiniciar\n%s" % [collected, int(oxygen), result]
+	var depth: float = maxf(0.0, 10.0 - submarine.global_position.y)
+	var rate: float = Rules.oxygen_rate_at_depth(submarine.global_position.y)
+	var remaining: int = int(ceil(Rules.estimated_oxygen_seconds(oxygen, rate)))
+	hud.text = "SUBMARINE ABYSS  •  EXPEDICAO 01\nPEROLAS: %d / 5      OXIGENIO: %d%%\nPROFUNDIDADE: %.1f m (simulada)   ESTIMATIVA: %ds\nWASD: navegar   A/D: girar   Q/E: subir/descer   R: reiniciar\n%s" % [collected, int(oxygen), depth, remaining, result]
