@@ -32,3 +32,12 @@ A CI também verifica a abertura do projeto por alguns frames em modo headless.
 
 ## Limites
 Protótipo de formas geométricas, sem biomas, inimigos, narrativas, áudio, efeitos avançados de água nem salvamento. É um jogo experimental, não uma simulação de mergulho real.
+
+
+## Consumo variável de oxigênio (novo)
+
+A quantidade de oxigênio consumida por segundo agora depende da profundidade **simulada**. Quanto mais baixo o submarino estiver no cenário, maior será a taxa: o valor base é **1,5 unidade/s**, aumentando gradualmente até o dobro em profundidades maiores. O HUD exibe a profundidade do jogo e uma estimativa dos segundos restantes se a taxa atual permanecer constante.
+
+O cálculo está isolado em `scripts/oxygen_rules.gd` e é verificado por novos testes em `tests/test_oxygen.gd`. A estimativa não prevê movimentos futuros, reposição por pérolas nem mudanças de profundidade.
+
+**Atenção:** as regras são de um jogo e não representam consumo de ar, limites ou procedimentos seguros de mergulho reais.
