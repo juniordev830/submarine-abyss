@@ -165,7 +165,8 @@ func _refresh_hud() -> void:
 		var nearest: int = Rules.nearest_target_index(submarine.global_position, positions)
 		if nearest >= 0:
 			var target: Vector3 = positions[nearest]
-			sonar_text = "SONAR: %s A %.1f m (%.1f s)" % [
+			sonar_text = "SONAR: %s / %s | %.1f m (%.1f s)" % [
+				Rules.sonar_relative_direction(submarine.global_position, target, -submarine.global_transform.basis.z),
 				Rules.sonar_direction(submarine.global_position, target),
 				submarine.global_position.distance_to(target), sonar_active
 			]
@@ -173,7 +174,10 @@ func _refresh_hud() -> void:
 			sonar_text = "SONAR: SEM ALVOS"
 	elif sonar_cooldown > 0.0:
 		sonar_text = "SONAR: RECARGA %.1f s" % sonar_cooldown
-	hud.text = "SUBMARINE ABYSS  •  EXPEDICAO 01\nPEROLAS: %d / 5      OXIGENIO: %d%%\nPROFUNDIDADE: %.1f m (simulada)   ESTIMATIVA: %ds\n%s\nWASD: navegar   A/D: girar   Q/E: subir/descer   R: reiniciar\n%s" % [collected, int(oxygen), depth, remaining, sonar_text, result]
+	var status_text := result
+	if oxygen <= 20.0 and not finished:
+		status_text = "ALERTA: OXIGENIO BAIXO! PROCURE PEROLAS."
+	hud.text = "SUBMARINE ABYSS  •  EXPEDICAO 01\nPEROLAS: %d / 5      OXIGENIO: %d%%\nPROFUNDIDADE: %.1f m (simulada)   ESTIMATIVA: %ds\n%s\nWASD: navegar   A/D: girar   Q/E: subir/descer   R: reiniciar\n%s" % [collected, int(oxygen), depth, remaining, sonar_text, status_text]
 
 func _setup_sonar_input() -> void:
 	if not InputMap.has_action("sonar"):
