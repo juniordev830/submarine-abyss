@@ -41,3 +41,9 @@ A quantidade de oxigênio consumida por segundo agora depende da profundidade **
 O cálculo está isolado em `scripts/oxygen_rules.gd` e é verificado por novos testes em `tests/test_oxygen.gd`. A estimativa não prevê movimentos futuros, reposição por pérolas nem mudanças de profundidade.
 
 **Atenção:** as regras são de um jogo e não representam consumo de ar, limites ou procedimentos seguros de mergulho reais.
+
+## Sonar de localização
+
+Pressione **Espaço** durante a expedição para ativar o sonar por **3 segundos**. O HUD mostra a direção cardeal (ou `SUBIR`/`DESCER`) e a distância até a pérola mais próxima ainda não coletada. A recarga é de **8 segundos** e começa na ativação. O alvo é recalculado enquanto o sonar estiver ativo; assim, ao coletar uma pérola, a próxima é indicada automaticamente.
+
+O sonar é uma ajuda de navegação baseada nas coordenadas do jogo, sem representar um equipamento real. As regras de seleção, distância e direção são cobertas em `tests/test_oxygen.gd`.
