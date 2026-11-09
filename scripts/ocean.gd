@@ -11,9 +11,12 @@ var oxygen := 100.0
 var collected := 0
 var finished := false
 var result := ""
+var sonar_active := 0.0
+var sonar_cooldown := 0.0
 
 
 func _ready() -> void:
+	_setup_sonar_input()
 	_setup_environment()
 	_create_world()
 	submarine = Submarine.new()
@@ -119,6 +122,11 @@ func _process(delta: float) -> void:
 	if Input.is_key_pressed(KEY_R):
 		get_tree().reload_current_scene()
 		return
+	sonar_active = maxf(0.0, sonar_active - delta)
+	sonar_cooldown = maxf(0.0, sonar_cooldown - delta)
+	if not finished and Input.is_action_just_pressed("sonar") and sonar_cooldown <= 0.0 and not collectibles.is_empty():
+		sonar_active = 3.0
+		sonar_cooldown = 8.0
 	if not finished:
 		var drain_rate: float = Rules.oxygen_rate_at_depth(submarine.global_position.y)
 		oxygen = Rules.consume_oxygen(oxygen, delta, drain_rate)
@@ -149,4 +157,27 @@ func _refresh_hud() -> void:
 	var depth: float = maxf(0.0, 10.0 - submarine.global_position.y)
 	var rate: float = Rules.oxygen_rate_at_depth(submarine.global_position.y)
 	var remaining: int = int(ceil(Rules.estimated_oxygen_seconds(oxygen, rate)))
-	hud.text = "SUBMARINE ABYSS  •  EXPEDICAO 01\nPEROLAS: %d / 5      OXIGENIO: %d%%\nPROFUNDIDADE: %.1f m (simulada)   ESTIMATIVA: %ds\nWASD: navegar   A/D: girar   Q/E: subir/descer   R: reiniciar\n%s" % [collected, int(oxygen), depth, remaining, result]
+	var sonar_text := "SONAR: PRONTO (ESPACO)"
+	if sonar_active > 0.0:
+		var positions: Array[Vector3] = []
+		for pearl in collectibles:
+			positions.append(pearl.global_position)
+		var nearest: int = Rules.nearest_target_index(submarine.global_position, positions)
+		if nearest >= 0:
+			var target: Vector3 = positions[nearest]
+			sonar_text = "SONAR: %s A %.1f m (%.1f s)" % [
+				Rules.sonar_direction(submarine.global_position, target),
+				submarine.global_position.distance_to(target), sonar_active
+			]
+		else:
+			sonar_text = "SONAR: SEM ALVOS"
+	elif sonar_cooldown > 0.0:
+		sonar_text = "SONAR: RECARGA %.1f s" % sonar_cooldown
+	hud.text = "SUBMARINE ABYSS  •  EXPEDICAO 01\nPEROLAS: %d / 5      OXIGENIO: %d%%\nPROFUNDIDADE: %.1f m (simulada)   ESTIMATIVA: %ds\n%s\nWASD: navegar   A/D: girar   Q/E: subir/descer   R: reiniciar\n%s" % [collected, int(oxygen), depth, remaining, sonar_text, result]
+
+func _setup_sonar_input() -> void:
+	if not InputMap.has_action("sonar"):
+		InputMap.add_action("sonar")
+	var key := InputEventKey.new()
+	key.physical_keycode = KEY_SPACE
+	InputMap.action_add_event("sonar", key)
