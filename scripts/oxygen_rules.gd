@@ -2,17 +2,21 @@ extends RefCounted
 ## Standalone, deterministic rules for an underwater exploration game.
 
 static func consume_oxygen(current: float, seconds: float, rate: float = 1.5) -> float:
+	if not is_finite(current) or not is_finite(seconds) or not is_finite(rate):
+		return 0.0
 	if current < 0.0 or seconds < 0.0 or rate < 0.0:
 		return 0.0
 	return clampf(current - seconds * rate, 0.0, 100.0)
 
 
 static func replenish_oxygen(current: float, amount: float = 12.0) -> float:
+	if not is_finite(current) or not is_finite(amount):
+		return 0.0
 	return clampf(maxf(0.0, current) + maxf(0.0, amount), 0.0, 100.0)
 
 
 static func can_collect(distance: float, reach: float = 1.8) -> bool:
-	return distance >= 0.0 and reach >= 0.0 and distance <= reach
+	return is_finite(distance) and is_finite(reach) and distance >= 0.0 and reach >= 0.0 and distance <= reach
 
 
 ## Altitude is an in-game vertical coordinate; lower positions consume more oxygen.
@@ -64,3 +68,25 @@ static func sonar_direction(origin: Vector3, target: Vector3) -> String:
 	if absf(offset.x) >= absf(offset.z):
 		return "LESTE" if offset.x > 0.0 else "OESTE"
 	return "SUL" if offset.z > 0.0 else "NORTE"
+
+## Human-readable bearing in the direction the submarine is currently facing.
+## Vertical guidance takes precedence when the target is mainly above or below.
+static func sonar_relative_direction(origin: Vector3, target: Vector3, forward: Vector3) -> String:
+	if not origin.is_finite() or not target.is_finite() or not forward.is_finite():
+		return "DESCONHECIDO"
+	var offset: Vector3 = target - origin
+	var flat_offset := Vector2(offset.x, offset.z)
+	if absf(offset.y) > flat_offset.length():
+		return "SUBIR" if offset.y > 0.0 else "DESCER"
+	if flat_offset.length_squared() < 0.000001:
+		return "AQUI"
+	var flat_forward := Vector2(forward.x, forward.z)
+	if flat_forward.length_squared() < 0.000001:
+		return "DESCONHECIDO"
+	flat_forward = flat_forward.normalized()
+	var flat_right := Vector2(-flat_forward.y, flat_forward.x)
+	var ahead: float = flat_offset.dot(flat_forward)
+	var sideways: float = flat_offset.dot(flat_right)
+	if absf(ahead) >= absf(sideways):
+		return "FRENTE" if ahead >= 0.0 else "ATRAS"
+	return "DIREITA" if sideways > 0.0 else "ESQUERDA"
