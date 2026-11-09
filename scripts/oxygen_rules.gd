@@ -33,3 +33,34 @@ static func estimated_oxygen_seconds(current: float, rate: float) -> float:
 	if current <= 0.0 or rate <= 0.0:
 		return 0.0
 	return current / rate
+
+## Locate the nearest remaining pearl; invalid coordinates never become a target.
+static func nearest_target_index(origin: Vector3, targets: Array[Vector3]) -> int:
+	if not origin.is_finite():
+		return -1
+	var nearest_index := -1
+	var nearest_squared := INF
+	for index in range(targets.size()):
+		var point: Vector3 = targets[index]
+		if not point.is_finite():
+			continue
+		var squared: float = origin.distance_squared_to(point)
+		if squared < nearest_squared:
+			nearest_squared = squared
+			nearest_index = index
+	return nearest_index
+
+
+## World-axis bearings: X positive is east, Z negative is north.
+static func sonar_direction(origin: Vector3, target: Vector3) -> String:
+	if not origin.is_finite() or not target.is_finite():
+		return "DESCONHECIDO"
+	var offset: Vector3 = target - origin
+	var horizontal: float = maxf(absf(offset.x), absf(offset.z))
+	if absf(offset.y) > horizontal:
+		return "SUBIR" if offset.y > 0.0 else "DESCER"
+	if horizontal < 0.001:
+		return "AQUI"
+	if absf(offset.x) >= absf(offset.z):
+		return "LESTE" if offset.x > 0.0 else "OESTE"
+	return "SUL" if offset.z > 0.0 else "NORTE"
