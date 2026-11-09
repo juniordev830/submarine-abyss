@@ -47,3 +47,9 @@ O cálculo está isolado em `scripts/oxygen_rules.gd` e é verificado por novos 
 Pressione **Espaço** durante a expedição para ativar o sonar por **3 segundos**. O HUD mostra a direção cardeal (ou `SUBIR`/`DESCER`) e a distância até a pérola mais próxima ainda não coletada. A recarga é de **8 segundos** e começa na ativação. O alvo é recalculado enquanto o sonar estiver ativo; assim, ao coletar uma pérola, a próxima é indicada automaticamente.
 
 O sonar é uma ajuda de navegação baseada nas coordenadas do jogo, sem representar um equipamento real. As regras de seleção, distância e direção são cobertas em `tests/test_oxygen.gd`.
+
+### Orientação relativa e alerta de oxigênio
+
+O sonar agora mostra também a posição da pérola **em relação à frente do submarino**: `FRENTE`, `ATRAS`, `DIREITA`, `ESQUERDA`, `SUBIR` ou `DESCER`. A direção absoluta permanece no HUD para orientação adicional. Quando o oxigênio chega a **20% ou menos**, aparece um aviso enquanto a missão estiver ativa.
+
+Foram acrescentados testes para a orientação e para evitar valores numéricos inválidos nas regras de oxigênio.
