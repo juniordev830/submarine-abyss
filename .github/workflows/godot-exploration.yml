@@ -1,0 +1,16 @@
+name: Godot underwater checks
+on: [push, pull_request]
+jobs:
+  godot-headless:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.3
+        run: |
+          curl -L --fail --retry 3 -o godot.zip https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.3-stable_linux.x86_64
+      - name: Check standalone gameplay rules
+        run: ./Godot_v4.3-stable_linux.x86_64 --headless --path . --script tests/test_oxygen.gd
+      - name: Check project startup
+        run: ./Godot_v4.3-stable_linux.x86_64 --headless --path . --quit-after 5
