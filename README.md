@@ -1,8 +1,8 @@
 # Submarine Abyss
 
-Exploração submarina 3D **planejada**, com cavernas, criaturas e missões em um ambiente de demonstração.
+Protótipo de exploração submarina com **modelo de missão em Python**: deslocamento 3D abstrato, recursos finitos, limites de profundidade, coleta e entrega. Ambiente visual 3D e build jogável permanecem planejados.
 
-> **Estado atual:** este repositório contém apenas proposta e licença. Não há implementação ou build jogável.
+> **Estado da `main`:** lógica de missão em `core.py`, testes em `tests/test_core.py` e workflow de CI. Ainda não há cenas, interface gráfica ou veículo controlável visualmente.
 
 ## Vertical slice
 
@@ -27,14 +27,14 @@ Uma pequena região submersa com submarino controlável, medidor de energia e ox
 ## Etapas
 
 - [ ] Definir engine, coordenadas e câmera subaquática.
-- [ ] Criar domínio com testes de limites de profundidade e recursos.
+- [x] Criar domínio com testes de limites de profundidade e recursos.
 - [ ] Montar cenário pequeno de teste, com assets licenciados.
 - [ ] Adicionar interação e objetivo único.
 - [ ] Medir desempenho em hardware de referência e registrar comandos.
 
 Não prometer comportamento realista de pressão oceânica ou segurança de navegação.
 
-## Primeiro incremento de código (em revisão)
+## Primeiro incremento de código (disponível na `main`)
 
 Exploração em três eixos com limites de profundidade, energia, oxigênio, coleta e entrega de missão.
 
